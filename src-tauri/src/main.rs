@@ -30,7 +30,8 @@ async fn main() {
             remove_task,
             get_all_users,
             add_user,
-            remove_user
+            remove_user,
+            try_login_user
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]

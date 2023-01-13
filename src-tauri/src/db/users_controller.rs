@@ -47,3 +47,25 @@ pub async fn remove_user(pool: &PgPool, user_id: i64) -> Result<u64, sqlx::Error
 
     Ok(rows_affected)
 }
+
+pub async fn try_login_user(
+    pool: &PgPool,
+    login: String,
+    password: String,
+) -> Result<Option<User>, sqlx::Error> {
+    let user = sqlx::query_as!(
+        UserEntity,
+        r#"
+        SELECT *
+        FROM users
+        WHERE login = $1
+        AND password = crypt($2, password)
+        "#,
+        login,
+        password
+    )
+    .fetch_optional(pool)
+    .await?;
+
+    Ok(user.map(User::from))
+}

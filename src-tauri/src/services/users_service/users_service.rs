@@ -39,3 +39,16 @@ pub async fn remove_user<'r>(
         .map_err(|e| format!("DB error: {}", e))?;
     Ok(rows_affected)
 }
+
+#[tauri::command]
+pub async fn try_login_user<'r>(
+    login: String,
+    password: String,
+    connection: State<'r, DbConnectionPool>,
+) -> Result<Option<User>, String> {
+    let pool = &*connection.connection.lock().await;
+    let user = users_controller::try_login_user(pool, login, password)
+        .await
+        .map_err(|e| format!("DB error: {}", e))?;
+    Ok(user)
+}
