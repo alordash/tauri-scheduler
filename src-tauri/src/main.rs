@@ -3,6 +3,8 @@
     windows_subsystem = "windows"
 )]
 
+pub mod model;
+
 #[tauri::command]
 async fn test_db() -> i32 {
     use sqlx::postgres::PgPoolOptions;
@@ -26,6 +28,7 @@ async fn test_db() -> i32 {
 }
 
 fn main() {
+    dotenvy::dotenv().ok();
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![test_db])
         .run(tauri::generate_context!())
