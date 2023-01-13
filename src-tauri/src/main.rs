@@ -8,8 +8,6 @@ pub mod model;
 pub mod services;
 
 use db::connection::establish_connection_pool;
-use model::task::task::new_task;
-use model::user::user::new_user;
 use services::tasks_service::tasks_service::*;
 use services::users_service::users_service::*;
 use tauri::Manager;
@@ -21,12 +19,12 @@ async fn main() {
     tauri::Builder::default()
         .manage(connections) // Makes connection pool available in all #[tauri::command]
         .invoke_handler(tauri::generate_handler![
-            new_task,
-            new_user,
+            create_task,
+            create_user,
             get_all_tasks,
             get_user_tasks,
             add_task,
-            complete_task,
+            set_task_done,
             remove_task,
             get_all_users,
             add_user,

@@ -1,9 +1,19 @@
+use chrono::{DateTime, NaiveDateTime, Utc};
 use tauri::State;
 
 use crate::{
     db::{connection::DbConnectionPool, tasks_controller},
     model::task::task::Task,
 };
+
+#[tauri::command]
+pub fn create_task(description: String, done: bool, due_time: String, created_by: i64) -> Task {
+    let due_time = DateTime::from_utc(
+        NaiveDateTime::parse_from_str(&due_time, "%Y-%m-%dT%H:%M").unwrap(),
+        Utc,
+    );
+    Task::new(description, done, due_time, created_by)
+}
 
 #[tauri::command]
 pub async fn get_all_tasks<'r>(
@@ -41,12 +51,13 @@ pub async fn add_task<'r>(
 }
 
 #[tauri::command]
-pub async fn complete_task<'r>(
+pub async fn set_task_done<'r>(
     task_id: i64,
+    done: bool,
     connection: State<'r, DbConnectionPool>,
 ) -> Result<u64, String> {
     let pool = &*connection.connection.lock().await;
-    let rows_affected = tasks_controller::complete_task(pool, task_id)
+    let rows_affected = tasks_controller::set_task_done(pool, task_id, done)
         .await
         .map_err(|e| format!("DB error: {}", e))?;
     Ok(rows_affected)

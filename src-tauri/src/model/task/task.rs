@@ -14,14 +14,15 @@ pub struct Task {
     created_by: i64,
 }
 
-#[tauri::command]
-pub fn new_task(description: String, done: bool, due_time: DateTime<Utc>, created_by: i64) -> Task {
-    Task {
-        id: None,
-        description,
-        done,
-        due_time,
-        created_by,
+impl Task {
+    pub fn new(description: String, done: bool, due_time: DateTime<Utc>, created_by: i64) -> Task {
+        Task {
+            id: None,
+            description,
+            done,
+            due_time,
+            created_by,
+        }
     }
 }
 

@@ -11,12 +11,13 @@ pub struct User {
     password: String,
 }
 
-#[tauri::command]
-pub fn new_user(login: String, password: String) -> User {
-    User {
-        id: None,
-        login,
-        password,
+impl User {
+    pub fn new(login: String, password: String) -> User {
+        User {
+            id: None,
+            login,
+            password,
+        }
     }
 }
 

@@ -6,6 +6,11 @@ use crate::{
 };
 
 #[tauri::command]
+pub fn create_user(login: String, password: String) -> User {
+    User::new(login, password)
+}
+
+#[tauri::command]
 pub async fn get_all_users<'r>(
     connection: State<'r, DbConnectionPool>,
 ) -> Result<Vec<User>, String> {

@@ -52,13 +52,14 @@ pub async fn add_task(pool: &PgPool, task: Task) -> Result<i64, sqlx::Error> {
     Ok(rec.id)
 }
 
-pub async fn complete_task(pool: &PgPool, task_id: i64) -> Result<u64, sqlx::Error> {
+pub async fn set_task_done(pool: &PgPool, task_id: i64, done: bool) -> Result<u64, sqlx::Error> {
     let rows_affected = sqlx::query!(
         r#"
         UPDATE tasks
-        SET done = TRUE
-        WHERE id = $1
+        SET done = $1
+        WHERE id = $2
         "#,
+        done,
         task_id
     )
     .execute(pool)

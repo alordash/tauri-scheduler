@@ -8,41 +8,34 @@
 </head>
 
 <body>
-    <h1>Welcome from Tauri!</h1>
-    <script>
-        const { invoke } = window.__TAURI__.tauri;
-
-        async function test_new_task() {
-            let task = await invoke('new_task', { description: 'wtf', done: false, dueTime: new Date(), createdBy: 1 });
-            let task_id = await invoke('add_task', { task });
-            console.log('task_id :>> ', task_id);
-        }
-
-        async function test_complete_task() {
-            let affected = await invoke('complete_task', { taskId: 4 });
-            console.log('affected :>> ', affected);
-        }
-
-        async function test_remove_task() {
-            let affected = await invoke('remove_task', { taskId: 4 });
-            console.log('affected :>> ', affected);
-        }
-
-        async function test_new_user() {
-            let user = await invoke('new_user', { login: 'aaaaa', password: 'bbbbb' });
-            let user_id = await invoke('add_user', { user });
-            console.log('user_id :>> ', user_id);
-        }
-
-        async function test_login_user() {
-            let user = await invoke('try_login_user', { login: 'alordash', password: '12345' });
-            console.log('logged user :>> ', user);
-        }
-
-        invoke('get_all_users', {}).then((response) => console.log('response :>> ', response));
-        // test_new_task();
-        test_login_user();
-    </script>
+    <script type="module" src="./scripts/main.js"></script>
+    <form id="loginForm">
+        <label>Login</label>
+        <input type="text" id="login" placeholder="login">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="password">
+        <input type="button" id="signin" value="Sign in" />
+    </form>
+    <div id="status" hidden=true>Invalid credentials.</div>
+    <input type="button" id="signout" value="Sign out" hidden=true />
+    <br />
+    <br />
+    <div id="taskDiv" hidden=true>
+        <form style="display: table-caption;">
+            New task<br />
+            <label>Description</label>
+            <input type="text" id="taskDescription" placeholder="description">
+            <label>Due time</label>
+            <input type="datetime-local" id="taskDueTime" placeholder="due time">
+            <input type="button" id="newTask" value="Create" />
+        </form>
+    </div>
+    <br />
+    <div id="tasksDisplay" hidden=true>
+        Your tasks list:
+        <br />
+        <div style="display: table-caption;" id="tasksList" hidden=true></div>
+    </div>
 </body>
 
 </html>
