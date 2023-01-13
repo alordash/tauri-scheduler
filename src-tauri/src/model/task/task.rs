@@ -1,10 +1,10 @@
 use chrono::prelude::*;
 use getset::{Getters, Setters};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use super::dao::task_entity::TaskEntity;
 
-#[derive(Debug, Clone, Serialize, Getters, Setters)]
+#[derive(Debug, Clone, Serialize, Deserialize, Getters, Setters)]
 #[getset(get = "pub", set = "pub")]
 pub struct Task {
     id: Option<i64>, // None if created manually, Some(id) if retrieved from db
@@ -14,15 +14,14 @@ pub struct Task {
     created_by: i64,
 }
 
-impl Task {
-    pub fn new(description: String, done: bool, due_time: DateTime<Utc>, created_by: i64) -> Self {
-        Task {
-            id: None,
-            description,
-            done,
-            due_time,
-            created_by,
-        }
+#[tauri::command]
+pub fn new_task(description: String, done: bool, due_time: DateTime<Utc>, created_by: i64) -> Task {
+    Task {
+        id: None,
+        description,
+        done,
+        due_time,
+        created_by,
     }
 }
 

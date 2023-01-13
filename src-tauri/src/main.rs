@@ -3,12 +3,14 @@
     windows_subsystem = "windows"
 )]
 
-use db::connection::establish_connection_pool;
-use services::tasks_service::tasks_service::get_all_tasks;
-
 pub mod db;
 pub mod model;
 pub mod services;
+
+use db::connection::establish_connection_pool;
+use model::task::task::new_task;
+use services::tasks_service::tasks_service::*;
+use tauri::Manager;
 
 #[tokio::main]
 async fn main() {
@@ -16,7 +18,22 @@ async fn main() {
     let connections = establish_connection_pool().await.unwrap();
     tauri::Builder::default()
         .manage(connections) // Makes connection pool available in all #[tauri::command]
-        .invoke_handler(tauri::generate_handler![get_all_tasks])
+        .invoke_handler(tauri::generate_handler![
+            new_task,
+            get_all_tasks,
+            get_user_tasks,
+            add_task,
+            complete_task,
+            remove_task
+        ])
+        .setup(|app| {
+            #[cfg(debug_assertions)]
+            {
+                let window = app.get_window("main").unwrap();
+                window.open_devtools();
+            }
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

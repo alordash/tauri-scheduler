@@ -1,9 +1,9 @@
 use getset::{Getters, Setters};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use super::dao::user_entity::UserEntity;
 
-#[derive(Debug, Clone, Serialize, Getters, Setters)]
+#[derive(Debug, Clone, Serialize, Deserialize, Getters, Setters)]
 #[getset(get = "pub", set = "pub")]
 pub struct User {
     id: Option<i64>, // None if created manually, Some(id) if retrieved from db
@@ -11,13 +11,12 @@ pub struct User {
     password: String,
 }
 
-impl User {
-    pub fn new(login: String, password: String) -> Self {
-        User {
-            id: None,
-            login,
-            password,
-        }
+#[tauri::command]
+pub fn new_user(login: String, password: String) -> User {
+    User {
+        id: None,
+        login,
+        password,
     }
 }
 
