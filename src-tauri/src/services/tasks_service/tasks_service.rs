@@ -1,4 +1,3 @@
-use sqlx::PgPool;
 use tauri::State;
 
 use crate::{
