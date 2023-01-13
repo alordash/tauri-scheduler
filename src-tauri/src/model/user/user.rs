@@ -1,25 +1,32 @@
+use getset::{Getters, Setters};
 use serde::Serialize;
 
-#[derive(Debug, Clone, Serialize)]
-pub struct User<'a> {
-    login: &'a str,
-    password: &'a str,
+use super::dao::user_entity::UserEntity;
+
+#[derive(Debug, Clone, Serialize, Getters, Setters)]
+#[getset(get = "pub", set = "pub")]
+pub struct User {
+    id: Option<i64>, // None if created manually, Some(id) if retrieved from db
+    login: String,
+    password: String,
 }
 
-impl<'a> User<'a> {
-    pub fn get_login(&self) -> &'a str {
-        self.login
+impl User {
+    pub fn new(login: String, password: String) -> Self {
+        User {
+            id: None,
+            login,
+            password,
+        }
     }
+}
 
-    pub fn set_login(&mut self, login: &'a str) {
-        self.login = login
-    }
-
-    pub fn get_password(&self) -> &'a str {
-        self.password
-    }
-
-    pub fn set_password(&mut self, password: &'a str) {
-        self.password = password
+impl From<UserEntity> for User {
+    fn from(user_entity: UserEntity) -> Self {
+        User {
+            id: Some(user_entity.id),
+            login: user_entity.login,
+            password: user_entity.password,
+        }
     }
 }

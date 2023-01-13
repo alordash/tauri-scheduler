@@ -1,35 +1,39 @@
 use chrono::prelude::*;
+use getset::{Getters, Setters};
 use serde::Serialize;
 
-#[derive(Debug, Clone, Serialize)]
-pub struct Task<'a> {
-    description: &'a str,
-    create_time: DateTime<Utc>,
+use super::dao::task_entity::TaskEntity;
+
+#[derive(Debug, Clone, Serialize, Getters, Setters)]
+#[getset(get = "pub", set = "pub")]
+pub struct Task {
+    id: Option<i64>, // None if created manually, Some(id) if retrieved from db
+    description: String,
+    done: bool,
     due_time: DateTime<Utc>,
+    created_by: i64,
 }
 
-impl<'a> Task<'a> {
-    pub fn get_description(&self) -> &'a str {
-        self.description
+impl Task {
+    pub fn new(description: String, done: bool, due_time: DateTime<Utc>, created_by: i64) -> Self {
+        Task {
+            id: None,
+            description,
+            done,
+            due_time,
+            created_by,
+        }
     }
+}
 
-    pub fn set_description(&mut self, description: &'a str) {
-        self.description = description
-    }
-
-    pub fn get_create_time(&self) -> &DateTime<Utc> {
-        &self.create_time
-    }
-
-    pub fn set_create_time(&mut self, create_time: DateTime<Utc>) {
-        self.create_time = create_time
-    }
-
-    pub fn get_due_time(&self) -> &DateTime<Utc> {
-        &self.due_time
-    }
-
-    pub fn set_due_time(&mut self, due_time: DateTime<Utc>) {
-        self.due_time = due_time
+impl From<TaskEntity> for Task {
+    fn from(task_entity: TaskEntity) -> Self {
+        Task {
+            id: Some(task_entity.id),
+            description: task_entity.description,
+            done: task_entity.done,
+            due_time: task_entity.due_time,
+            created_by: task_entity.created_by,
+        }
     }
 }

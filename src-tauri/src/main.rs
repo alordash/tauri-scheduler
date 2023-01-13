@@ -3,34 +3,20 @@
     windows_subsystem = "windows"
 )]
 
+use db::connection::establish_connection_pool;
+use services::tasks_service::tasks_service::get_all_tasks;
+
+pub mod db;
 pub mod model;
+pub mod services;
 
-#[tauri::command]
-async fn test_db() -> i32 {
-    use sqlx::postgres::PgPoolOptions;
-
-    let pool = PgPoolOptions::new()
-        .max_connections(5)
-        .connect("postgres://postgres:password@localhost/postgres")
-        .await
-        .unwrap();
-
-    // Make a simple query to return the given parameter (use a question mark `?` instead of `$1` for MySQL)
-    let row: (i32,) = sqlx::query_as("SELECT $1")
-        .bind(150_i32)
-        .fetch_one(&pool)
-        .await
-        .unwrap();
-
-    println!("row.0: {}", row.0);
-    
-    row.0
-}
-
-fn main() {
+#[tokio::main]
+async fn main() {
     dotenvy::dotenv().ok();
+    let connections = establish_connection_pool().await.unwrap();
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![test_db])
+        .manage(connections) // Makes connection pool available in all #[tauri::command]
+        .invoke_handler(tauri::generate_handler![get_all_tasks])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

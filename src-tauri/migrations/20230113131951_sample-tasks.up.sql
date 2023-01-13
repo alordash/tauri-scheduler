@@ -1,9 +1,9 @@
 INSERT INTO
-    tasks (description, create_time, due_time, created_by)
+    tasks (description, done, due_time, created_by)
 VALUES
     (
         'Exams preparation',
-        current_timestamp,
+        TRUE,
         current_timestamp + '5 days',
         (
             SELECT
@@ -16,7 +16,7 @@ VALUES
     ),
     (
         'Holidays',
-        current_timestamp + '1 day',
+        FALSE,
         current_timestamp + '20 days',
         (
             SELECT
@@ -29,7 +29,7 @@ VALUES
     ),
     (
         'Summer exams',
-        current_timestamp,
+        FALSE,
         current_timestamp + '100 days',
         (
             SELECT
