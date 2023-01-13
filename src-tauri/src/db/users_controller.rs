@@ -17,7 +17,27 @@ pub async fn get_all_users(pool: &PgPool) -> Result<Vec<User>, sqlx::Error> {
     Ok(user_entities.into_iter().map(User::from).collect())
 }
 
+pub async fn get_user_by_login(pool: &PgPool, login: &String) -> Result<Option<User>, sqlx::Error> {
+    let user_entity = sqlx::query_as!(
+        UserEntity,
+        r#"
+        SELECT *
+        FROM users
+        WHERE login = $1
+        ORDER BY id
+        "#,
+        login
+    )
+    .fetch_optional(pool)
+    .await?;
+
+    Ok(user_entity.map(User::from))
+}
+
 pub async fn add_user(pool: &PgPool, user: User) -> Result<i64, sqlx::Error> {
+    if user.login().is_empty() || user.password().is_empty() {
+        return Err(sqlx::Error::RowNotFound);
+    }
     let rec = sqlx::query!(
         r#"
         INSERT INTO users (login, password)

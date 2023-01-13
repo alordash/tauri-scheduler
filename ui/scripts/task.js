@@ -1,6 +1,6 @@
 const { invoke } = window.__TAURI__.tauri;
 
-export function createNewTask(description, isDone, dueTime, createdBy) {
+export function createTask(description, isDone, dueTime, createdBy) {
     const task = invoke('create_task', { description, done: isDone, dueTime, createdBy });
     return task;
 }

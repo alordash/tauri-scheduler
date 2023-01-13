@@ -27,6 +27,14 @@ pub async fn add_user<'r>(
     connection: State<'r, DbConnectionPool>,
 ) -> Result<i64, String> {
     let pool = &*connection.connection.lock().await;
+    match users_controller::get_user_by_login(pool, user.login()).await {
+        Ok(v) => match v {
+            Some(_) => return Err(String::from("Already registered")),
+            None => (),
+        },
+        Err(_) => (),
+    };
+
     let user_id = users_controller::add_user(pool, user)
         .await
         .map_err(|e| format!("DB error: {}", e))?;

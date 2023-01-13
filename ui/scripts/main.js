@@ -1,6 +1,6 @@
-import { addNewTask, createNewTask } from './task.js';
+import { addNewTask, createTask } from './task.js';
 import { setElementVisible, showTasksList } from './ui.js';
-import { tryLoginUser } from './user.js';
+import { addUser, createUser, tryLoginUser } from './user.js';
 
 const signOut = document.getElementById('signout');
 const statusDiv = document.getElementById('status');
@@ -8,6 +8,22 @@ const taskDiv = document.getElementById('taskDiv');
 const tasksDisplay = document.getElementById('tasksDisplay');
 
 let userId = null;
+
+async function register() {
+    const login = document.getElementById('login').value;
+    const password = document.getElementById('password').value;
+
+    const user = await createUser(login, password);
+
+    if (user == undefined) {
+        return;
+    }
+    const user_id = await addUser(user);
+    if (user_id == null) {
+        return
+    }
+    signInOnClick();
+}
 
 async function signInOnClick() {
     const login = document.getElementById('login').value;
@@ -48,12 +64,13 @@ async function createNewTaskOnClick() {
     const description = document.getElementById('taskDescription').value;
     const dueTime = document.getElementById('taskDueTime').value;
 
-    const task = await createNewTask(description, false, dueTime, userId);
+    const task = await createTask(description, false, dueTime, userId);
     const task_id = await addNewTask(task);
 
     await showTasksList(userId);
 }
 
+document.getElementById('register').onclick = register;
 document.getElementById('signin').onclick = signInOnClick;
 signOut.onclick = signOutClick;
 document.getElementById('newTask').onclick = createNewTaskOnClick;
